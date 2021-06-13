@@ -20,8 +20,8 @@
                                 <rect key="frame" x="137" y="174" width="140" height="140"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Answer Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oah-Xw-xag">
-                                <rect key="frame" x="131" y="359" width="152" height="29"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Answer Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="oah-Xw-xag">
+                                <rect key="frame" x="20" y="333" width="374" height="80"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
                                 <nil key="textColor"/>
@@ -36,7 +36,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GHM-Lx-aCd">
-                                <rect key="frame" x="258" y="508" width="92" height="30"/>
+                                <rect key="frame" x="233" y="508" width="117" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Next Element"/>
                                 <connections>
@@ -47,7 +47,7 @@
                                 <rect key="frame" x="137" y="431" width="140" height="34"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done"/>
                                 <connections>
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="ccS-ob-sKt"/>
                                 </connections>
@@ -59,6 +59,9 @@
                                     <segment title="Flash Cards"/>
                                     <segment title="Quiz"/>
                                 </segments>
+                                <connections>
+                                    <action selector="switchModes:" destination="BYZ-38-t0r" eventType="valueChanged" id="nl2-hA-xXH"/>
+                                </connections>
                             </segmentedControl>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
@@ -68,6 +71,8 @@
                         <outlet property="answerLabel" destination="oah-Xw-xag" id="jVC-p5-A6S"/>
                         <outlet property="imageView" destination="Zw9-Qx-qWu" id="GjP-m7-JWe"/>
                         <outlet property="modeSelector" destination="UYZ-N4-Ale" id="ku1-sF-NPH"/>
+                        <outlet property="nextButton" destination="GHM-Lx-aCd" id="zYq-dK-cV1"/>
+                        <outlet property="showAnswerButton" destination="1vV-ez-TlL" id="8Vx-94-oOY"/>
                         <outlet property="textField" destination="ch4-cy-1ty" id="lMP-l5-6hd"/>
                     </connections>
                 </viewController>

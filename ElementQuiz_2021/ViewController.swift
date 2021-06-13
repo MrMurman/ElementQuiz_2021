@@ -15,6 +15,7 @@ enum Mode {
 enum State {
     case question
     case answer
+    case score
 }
 
 class ViewController: UIViewController, UITextFieldDelegate {
@@ -25,11 +26,26 @@ class ViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var modeSelector: UISegmentedControl!
     @IBOutlet weak var textField: UITextField!
     
+    @IBOutlet weak var showAnswerButton: UIButton!
+    @IBOutlet weak var nextButton: UIButton!
     
-    let elementList = ["Carbon", "Gold", "Chlorine", "Sodium"]
+    
+    let fixedElementList = ["Carbon", "Gold", "Chlorine", "Sodium"]
+    var elementList: [String] = []
     var currentElementIndex = 0
     
-    var mode: Mode = .flashCard
+    var mode: Mode = .flashCard {
+        didSet {
+            switch mode {
+            case .flashCard:
+                setupFlashCards()
+            case . quiz:
+                setupQuiz()
+            }
+            
+            updateUI()
+        }
+    }
     
     var state: State = .question
     
@@ -40,22 +56,52 @@ class ViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        updateUI()
+        mode = .flashCard
     }
 
-    func updateFlashCardUI() {
-        let elementName = elementList[currentElementIndex]
-        let image = UIImage(named: elementName)
-        imageView.image = image
+    func updateFlashCardUI(elementName: String) {
+      
+        // Textfield and keyboard
+        textField.isHidden = true
+        textField.resignFirstResponder()
         
+        // Answer label
         if state == .answer {
             answerLabel.text = elementName
         } else {
             answerLabel.text = "?"
         }
+        
+        // Segmented control
+        modeSelector.selectedSegmentIndex = 0
+        
+        // Buttons
+        showAnswerButton.isHidden = false
+        nextButton.isEnabled = true
+        nextButton.setTitle("Next Element", for: .normal)
+        
     }
 
-    func updateQuizUI() {
+    func updateQuizUI(elemenName: String) {
+        
+        // Textfield and keyboard
+        textField.isHidden = false
+        switch state {
+        case .question:
+            textField.isEnabled = true
+            textField.text = ""
+            textField.resignFirstResponder()
+        case .answer:
+            textField.isEnabled = false
+            textField.resignFirstResponder()
+        case .score:
+            textField.isHidden = true
+            textField.resignFirstResponder()
+            displayScoreAlert()
+        }
+        textField.resignFirstResponder()
+            
+        // Answer label
         switch state {
         case .question:
             answerLabel.text = ""
@@ -63,17 +109,44 @@ class ViewController: UIViewController, UITextFieldDelegate {
             if answerIsCorrect {
                 answerLabel.text = "Correct!"
             } else {
-                answerLabel.text = "❌"
+                answerLabel.text = "❌\nCorrect Answer: " + elemenName
             }
+        case .score:
+            answerLabel.text = ""
+            print("Your score is \(correctAnswerCount) out of \(elementList.count)")
+        }
+        
+        // Segmented control
+        modeSelector.selectedSegmentIndex = 1
+        
+        // Buttons
+        showAnswerButton.isHidden = true
+        if currentElementIndex == elementList.count-1 {
+            nextButton.setTitle("Show Score", for: .normal)
+        } else {
+            nextButton.setTitle("Next Question", for: .normal)
+        }
+        
+        switch state {
+        case .question:
+            nextButton.isEnabled = false
+        case .answer:
+            nextButton.isEnabled = true
+        case .score:
+            nextButton.isEnabled = false
         }
     }
     
     func updateUI() {
+        let elementName = elementList[currentElementIndex]
+        let image = UIImage(named: elementName)
+        imageView.image = image
+        
         switch mode {
         case .flashCard:
-            updateFlashCardUI()
+            updateFlashCardUI(elementName: elementName)
         case .quiz:
-            updateQuizUI()
+            updateQuizUI(elemenName: elementName)
         }
     }
     
@@ -95,12 +168,40 @@ class ViewController: UIViewController, UITextFieldDelegate {
         
         updateUI()
         
-        if answerIsCorrect {
-            print("Correct!")
-        } else {print("❌")}
-        
         return true
     }
+    
+    // Shows an iOS alert with the user's quiz score
+    func displayScoreAlert() {
+        let alert = UIAlertController(title: "Quiz Score", message: "Your score is \(correctAnswerCount) out of \(elementList.count)", preferredStyle: .alert)
+        
+        let dismissAction = UIAlertAction(title: "OK", style: .default, handler: scoreAlertDismissed(_:))
+        alert.addAction(dismissAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func scoreAlertDismissed(_ action: UIAlertAction) {
+        mode = .flashCard
+    }
+    
+    // Sets up a new flash card session
+    func setupFlashCards() {
+        elementList = fixedElementList
+        state = .question
+        currentElementIndex = 0
+    }
+    
+    // Sets up a new quiz
+    func setupQuiz() {
+        elementList = fixedElementList.shuffled()
+        
+        state = .question
+        currentElementIndex = 0
+        answerIsCorrect = false
+        correctAnswerCount = 0
+    }
+    
     
     @IBAction func showAnswer(_ sender: UIButton) {
         state = .answer
@@ -111,11 +212,28 @@ class ViewController: UIViewController, UITextFieldDelegate {
         currentElementIndex += 1
         if currentElementIndex >= elementList.count {
             currentElementIndex = 0
+            if mode == .quiz {
+                state = .score
+                updateUI()
+                return
+            }
         }
         
         state = .question
         
         updateUI()
     }
+    
+    
+    @IBAction func switchModes(_ sender: Any) {
+        if modeSelector.selectedSegmentIndex == 0 {
+            mode = .flashCard
+        } else {
+            mode = .quiz
+        }
+    }
+    
+    
+    
 }
 
